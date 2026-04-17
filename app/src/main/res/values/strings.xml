@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Stochastic Reminder</string>
+    <string name="app_name" translatable="false">Stochastic Reminder</string>
     <string name="edit_screen_name">Edit Reminder</string>
     <string name="new_screen_name">New Reminder</string>
     <string name="home_btn_add">Add Reminder</string>
@@ -15,7 +15,7 @@
     <string name="dialog_dismiss_label">Cancel</string>
     <string name="permission_required_title">Permission Required</string>
     <string name="permission_required_message">You need to enable notifications to use this app.</string>
-    <string name="app_notification_channel_id">STOCHAPOP_REMINDERS_CHANNEL_ID</string>
+    <string name="app_notification_channel_id" translatable="false">STOCHAPOP_REMINDERS_CHANNEL_ID</string>
     <string name="edit_reminder_text">Message</string>
     <string name="edit_reminder_title">Title</string>
     <string name="delete_reminder_confirmation_title">Delete Reminder</string>
@@ -24,4 +24,6 @@
     <string name="edit_cancel_btn">Cancel</string>
     <string name="day_selection_toast">At least one day must be selected.</string>
     <string name="edit_label_alarm_type">Alarm type</string>
+    <string name="edit_alarm_type_sound">Sound</string>
+    <string name="edit_alarm_type_vibration">Vibration</string>
 </resources>

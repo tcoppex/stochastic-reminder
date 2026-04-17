@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_screen_name">Editar recordatorio</string>
+    <string name="new_screen_name">Nuevo recordatorio</string>
+    <string name="home_btn_add">Añadir recordatorio</string>
+    <string name="edit_enable_label">Activar</string>
+    <string name="use_random_range_label">Rango aleatorio</string>
+    <string name="edit_time_label">Hora</string>
+    <string name="edit_days_selection_label">Días de la semana</string>
+    <string name="edit_save_btn">Guardar</string>
+    <string name="edit_test_btn">Probar</string>
+    <string name="edit_delete_btn">Eliminar</string>
+    <string name="edit_count_slider_label">Notificaciones por día</string>
+    <string name="dialog_confirm_label">Confirmar</string>
+    <string name="dialog_dismiss_label">Cancelar</string>
+    <string name="permission_required_title">Permiso necesario</string>
+    <string name="permission_required_message">Debes habilitar las notificaciones para usar esta aplicación.</string>
+    <string name="edit_reminder_text">Mensaje</string>
+    <string name="edit_reminder_title">Título</string>
+    <string name="delete_reminder_confirmation_title">Eliminar recordatorio</string>
+    <string name="delete_reminder_confirmation_message">¿Estás seguro de que quieres eliminar este recordatorio?</string>
+    <string name="top_bar_arrow_desc">Atrás</string>
+    <string name="edit_cancel_btn">Cancelar</string>
+    <string name="day_selection_toast">Debes seleccionar al menos un día.</string>
+    <string name="edit_label_alarm_type">Tipo de alarma</string>
+    <string name="edit_alarm_type_sound">Sonido</string>
+    <string name="edit_alarm_type_vibration">Vibración</string>
+</resources>

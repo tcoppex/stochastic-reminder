@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="edit_screen_name">Modifica promemoria</string>
+    <string name="new_screen_name">Nuovo promemoria</string>
+    <string name="home_btn_add">Aggiungi promemoria</string>
+    <string name="edit_enable_label">Attiva</string>
+    <string name="use_random_range_label">Intervallo casuale</string>
+    <string name="edit_time_label">Orario</string>
+    <string name="edit_days_selection_label">Giorni della settimana</string>
+    <string name="edit_save_btn">Salva</string>
+    <string name="edit_test_btn">Test</string>
+    <string name="edit_delete_btn">Elimina</string>
+    <string name="edit_count_slider_label">Notifiche al giorno</string>
+    <string name="dialog_confirm_label">Conferma</string>
+    <string name="dialog_dismiss_label">Annulla</string>
+    <string name="permission_required_title">Autorizzazione richiesta</string>
+    <string name="permission_required_message">È necessario abilitare le notifiche per utilizzare questa app.</string>
+    <string name="edit_reminder_text">Messaggio</string>
+    <string name="edit_reminder_title">Titolo</string>
+    <string name="delete_reminder_confirmation_title">Elimina promemoria</string>
+    <string name="delete_reminder_confirmation_message">Sei sicuro di voler eliminare questo promemoria?</string>
+    <string name="top_bar_arrow_desc">Indietro</string>
+    <string name="edit_cancel_btn">Annulla</string>
+    <string name="day_selection_toast">È necessario selezionare almeno un giorno.</string>
+    <string name="edit_label_alarm_type">Tipo di sveglia</string>
+    <string name="edit_alarm_type_sound">Audio</string>
+    <string name="edit_alarm_type_vibration">Vibrazione</string>
+</resources>

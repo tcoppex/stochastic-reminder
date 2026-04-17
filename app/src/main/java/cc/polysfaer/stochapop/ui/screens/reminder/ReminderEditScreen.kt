@@ -448,7 +448,7 @@ fun AlarmTypeRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             OptionChip(
-                label = "Sound",
+                label = stringResource(R.string.edit_alarm_type_sound),
                 value = hasSound,
                 onClick = { onHasSoundChange(!hasSound) },
                 iconOn = {
@@ -466,7 +466,7 @@ fun AlarmTypeRow(
             )
 
             OptionChip(
-                label = "Vibration",
+                label = stringResource(R.string.edit_alarm_type_vibration),
                 value = hasVibration,
                 onClick = { onHasVibrationChange(!hasVibration) },
                 iconOn = {
