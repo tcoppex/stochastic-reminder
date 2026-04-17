@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Stochastic Reminder</string>
+    <string name="edit_screen_name">Edit Reminder</string>
+    <string name="new_screen_name">New Reminder</string>
+    <string name="home_btn_add">Add Reminder</string>
+    <string name="edit_enable_label">Enable</string>
+    <string name="use_random_range_label">Random range</string>
+    <string name="edit_time_label">Time</string>
+    <string name="edit_days_selection_label">Days of the week</string>
+    <string name="edit_save_btn">Save</string>
+    <string name="edit_test_btn">Test</string>
+    <string name="edit_delete_btn">Delete</string>
+    <string name="edit_count_slider_label">Notifications per day</string>
+    <string name="dialog_confirm_label">Confirm</string>
+    <string name="dialog_dismiss_label">Cancel</string>
+    <string name="permission_required_title">Permission Required</string>
+    <string name="permission_required_message">You need to enable notifications to use this app.</string>
+    <string name="app_notification_channel_id">STOCHAPOP_REMINDERS_CHANNEL_ID</string>
+    <string name="edit_reminder_text">Message</string>
+    <string name="edit_reminder_title">Title</string>
+    <string name="delete_reminder_confirmation_title">Delete Reminder</string>
+    <string name="delete_reminder_confirmation_message">Are you sure you want to delete this reminder?</string>
+    <string name="top_bar_arrow_desc">Back</string>
+    <string name="edit_cancel_btn">Cancel</string>
+    <string name="day_selection_toast">At least one day must be selected.</string>
+    <string name="edit_label_alarm_type">Alarm type</string>
+</resources>
