@@ -1,0 +1,11 @@
+Manage reminders with customized notification randomly during the week.
+
+<b>Features</b>
+
+* Schedule fixed and random reminders up to 48H ranges,
+* Triggered on specific days of the week,
+* Specify both the title and long-form multiline message,
+* Group same reminder notifications together to avoid clutting,
+* Specify the alarm type: sound, vibration, both or muted,
+* Use exact alarm for non muted notifications.
+* Use battery preserving scheduling on muted notifications.
