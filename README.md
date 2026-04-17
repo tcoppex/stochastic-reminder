@@ -2,6 +2,9 @@
 ![SDK](https://img.shields.io/badge/API-29%2B-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)
 
+
+![](fastlane/metadata/android/en-US/images/featureGraphic.png)
+
 # StochaPop! - A Stochastic Reminder
 
 _Stochastic Reminder_ is an Android application to schedule random and fixed notifications.
