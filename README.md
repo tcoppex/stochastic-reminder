@@ -2,6 +2,9 @@
 ![SDK](https://img.shields.io/badge/API-29%2B-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)
 
+
+![](fastlane/metadata/android/en-US/images/featureGraphic.png)
+
 # StochaPop! - A Stochastic Reminder
 
 _Stochastic Reminder_ is an Android application to schedule random and fixed notifications.
@@ -21,6 +24,12 @@ _Stochastic Reminder_ is an Android application to schedule random and fixed not
   <img src="https://i.imgur.com/MbGolnL.png" width="300" alt="Écran Principal" />
   <img src="https://i.imgur.com/XdSrwFG.png" width="300" alt="Écran Configuration" />
 </p>
+
+
+## Acknowledgement
+
+The [application icon](fastlane/metadata/android/en-US/images/icon.png) come from the [OpenMoji](https://openmoji.org/) project under the _Creative Commons Share Alike License 4.0_
+([CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/#)).
 
 ## License
 
