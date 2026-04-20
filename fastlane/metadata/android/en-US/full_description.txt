@@ -1,11 +1,12 @@
-Manage reminders with customized notification randomly during the week.
+Create and manage reminders with customized notification.
 
 <b>Features</b>
 
-* Schedule fixed and random reminders up to 48H ranges,
+* Schedule weekly fixed and random notifications for specific time range,
 * Triggered on specific days of the week,
 * Specify both the title and long-form multiline message,
 * Group same reminder notifications together to avoid clutting,
 * Specify the alarm type: sound, vibration, both or muted,
-* Use exact alarm for non muted notifications.
-* Use battery preserving scheduling on muted notifications.
+* Use exact alarm for non muted notifications,
+* Use battery preserving scheduling on muted notifications,
+* Localizations available for french, italian, spanish and german.
