@@ -22,17 +22,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import cc.polysfaer.stochapop.R
 import cc.polysfaer.stochapop.ui.navigation.AppNavHost
 import cc.polysfaer.stochapop.ui.screens.home.HomeDestination
+import cc.polysfaer.stochapop.ui.screens.reminder.EditReminderDestination
+import cc.polysfaer.stochapop.ui.screens.reminder.NewReminderDestination
 
 @Composable
 fun StochaPopApp(
     navController: NavHostController = rememberNavController()
 ) {
-    var topBarTitleRes by remember {
-        mutableIntStateOf(R.string.app_name)
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val titleRes = when {
+        currentRoute == HomeDestination.route -> HomeDestination.titleRes
+        currentRoute == NewReminderDestination.route -> NewReminderDestination.titleRes
+        currentRoute?.startsWith(EditReminderDestination.route) == true -> EditReminderDestination.titleRes
+        else -> R.string.app_name
     }
 
     val navigateBackHome: ()->Unit = {
@@ -40,21 +50,20 @@ fun StochaPopApp(
     }
 
     Scaffold(
-        topBar = { StochaPopAppBar(
-            titleRes = topBarTitleRes,
-            canNavigateBack = navController.previousBackStackEntry != null,
-            navigateUp = {
-                navigateBackHome()
-            }
-        ) },
+        topBar = {
+            StochaPopAppBar(
+                titleRes = titleRes,
+                canNavigateBack = navController.previousBackStackEntry != null,
+                navigateUp = navigateBackHome
+            )
+        },
         containerColor = Color.Transparent,
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         AppNavHost(
             navController = navController,
-            navigateBackHome = navigateBackHome,
-            onTitleResChanged = { topBarTitleRes = it },
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            navigateBackHome = navigateBackHome
         )
     }
 }

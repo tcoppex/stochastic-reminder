@@ -16,7 +16,6 @@ import cc.polysfaer.stochapop.ui.screens.reminder.ReminderEditScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    onTitleResChanged: (Int) -> Unit,
     modifier: Modifier = Modifier,
     navigateBackHome: () -> Unit
 ) {
@@ -26,7 +25,6 @@ fun AppNavHost(
         modifier = modifier.fillMaxSize(),
     ) {
         composable(route = HomeDestination.route) {
-            LaunchedEffect(Unit) { onTitleResChanged(HomeDestination.titleRes) }
             HomeScreen(
                 navigateToNewReminder = {
                     navController.navigate(NewReminderDestination.route)
@@ -37,14 +35,12 @@ fun AppNavHost(
             )
         }
         composable(route = NewReminderDestination.route) {
-            LaunchedEffect(Unit) { onTitleResChanged(NewReminderDestination.titleRes) }
             ReminderEditScreen(navigateBack = navigateBackHome)
         }
         composable(
             route = EditReminderDestination.routeWithArgs,
             arguments = EditReminderDestination.arguments
         ) {
-            LaunchedEffect(Unit) { onTitleResChanged(EditReminderDestination.titleRes) }
             ReminderEditScreen(navigateBack = navigateBackHome)
         }
     }
