@@ -14,15 +14,15 @@ _Stochastic Reminder_ is an Android application to schedule weekly fixed and ran
 - Triggered on specific days of the week,
 - Specify both the title and long-form multiline message,
 - Availables with sound, vibration, both or none,
-- Exact alarm for non silent notifications.
+- Exact alarm for non silent notifications,
 - Battery preserving scheduling on silent notifications,
-- Support localization for French 🇫🇷, Italian 🇮🇹, Spanish 🇪🇸 and German 🇩🇪.
+- Supported languages: Français 🇫🇷, Italiano 🇮🇹, Español 🇪🇸 und Deutsch 🇩🇪.
 
 ## Preview
 
 <p align="center">
-  <img src="https://i.imgur.com/MbGolnL.png" width="300" alt="Écran Principal" />
-  <img src="https://i.imgur.com/XdSrwFG.png" width="300" alt="Écran Configuration" />
+  <img src="https://i.imgur.com/MbGolnL.png" width="300" alt="Home Screen" />
+  <img src="https://i.imgur.com/XdSrwFG.png" width="300" alt="Edit Screen" />
 </p>
 
 
@@ -36,4 +36,4 @@ _Stochastic Reminder_ is an Android application to schedule weekly fixed and ran
 
 _Stochastic Reminder_ is a _Libre Software_ released under the **GNU General Public License v3.0**.
 
-<!--  <img src="https://www.paulkingsnorth.net/s/writers-against-AI-logos_WRITERS-AGAINST-AI-1.png" width="300" alt="against AI" /> -->
+<!--  <img src="https://www.paulkingsnorth.net/s/writers-against-AI-logos_WRITERS-AGAINST-AI-1.png" width="128" alt="against AI" /> -->
