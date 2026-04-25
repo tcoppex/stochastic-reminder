@@ -9,10 +9,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import cc.polysfaer.stochapop.MainActivity
 import cc.polysfaer.stochapop.R
 import cc.polysfaer.stochapop.data.reminder.Reminder
@@ -42,6 +44,16 @@ object NotificationChannels {
     fun getDefaultChannelId(hasSound: Boolean = true, hasVibration: Boolean = false): String = getChannelId(
         isUrgent = true, isPublic = true, hasSound, hasVibration
     )
+
+    fun hasPostNotificationPermission(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission( context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
 
     fun initialize(context: Context) {
         val manager = context.getSystemService(NotificationManager::class.java)

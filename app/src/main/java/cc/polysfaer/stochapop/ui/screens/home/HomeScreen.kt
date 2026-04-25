@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -56,9 +55,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cc.polysfaer.stochapop.R
+import cc.polysfaer.stochapop.controller.NotificationChannels.hasPostNotificationPermission
 import cc.polysfaer.stochapop.controller.openAppSettings
 import cc.polysfaer.stochapop.data.DataSource
 import cc.polysfaer.stochapop.data.reminder.Reminder
@@ -143,20 +142,21 @@ fun AddReminderWithPermissionButton(
     var haveClicked by remember { mutableStateOf(false) }
 
     // Check if we have the POST_NOTIFICATION permission.
-    var hasNotificationPermission by remember { mutableStateOf(value =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission( context,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
-    )}
+    var hasNotificationPermission by remember {
+        mutableStateOf(hasPostNotificationPermission(context))
+    }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         hasNotificationPermission = isGranted
-        if (isGranted && haveClicked) { onClick() }
+        if (haveClicked) {
+            if (isGranted) {
+                onClick()
+            } else {
+                showRationaleDialog = true
+            }
+        }
     }
 
     LaunchedEffect(Unit) {
