@@ -1,6 +1,7 @@
 package cc.polysfaer.stochapop.data
 
 import android.content.Context
+import android.provider.Settings
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -32,8 +33,9 @@ abstract class AppDatabase : RoomDatabase() {
 
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
+                val defaultUriString = Settings.System.DEFAULT_NOTIFICATION_URI.toString()
                 db.execSQL(
-                    "ALTER TABLE reminders ADD COLUMN soundUri TEXT DEFAULT NULL"
+                    "ALTER TABLE reminders ADD COLUMN soundUri TEXT DEFAULT '$defaultUriString'"
                 )
             }
         }

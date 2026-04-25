@@ -1,6 +1,7 @@
 package cc.polysfaer.stochapop.ui.screens.reminder
 
 import android.net.Uri
+import android.provider.Settings
 import cc.polysfaer.stochapop.data.reminder.Reminder
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -30,7 +31,7 @@ data class ReminderDetails(
     val useRandomRange: Boolean = true,
     val hasSound: Boolean = true,
     val hasVibration: Boolean = false,
-    val soundUri: Uri? = null, // xxx (and use system default when null)
+    val soundUri: Uri? = Settings.System.DEFAULT_NOTIFICATION_URI, //
     val notificationCount: Int = ReminderEditSetting.DEFAULT_RANDOM_NOTIFICATION_COUNT,
     val startTime: LocalTime = getRoundLocalTime(1),
     val endTime: LocalTime = getRoundLocalTime(2),

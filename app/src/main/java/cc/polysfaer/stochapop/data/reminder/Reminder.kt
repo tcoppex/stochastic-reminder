@@ -17,7 +17,7 @@ data class Reminder(
     val useRandomRange: Boolean,
     val hasSound: Boolean,
     val hasVibration: Boolean,
-    val soundUri: Uri?,                                     // stored as Text (String?)
+    val soundUri: Uri?,                                     // stored as 'String?'
     val notificationCount: Int,
     val startTime: LocalTime,                               // stored as Int (minutes of the day)
     val endTime: LocalTime,                                 // stored as Int (minutes of the day)
