@@ -2,10 +2,18 @@
 
 package cc.polysfaer.stochapop.ui.screens.reminder
 
+import android.R.attr.text
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
+import android.provider.Settings
 import android.text.format.DateFormat
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -91,9 +99,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.IntentCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.room.util.TableInfo
 import cc.polysfaer.stochapop.R
 import cc.polysfaer.stochapop.controller.sendNotification
 import cc.polysfaer.stochapop.ui.AppViewModelProvider
@@ -137,6 +147,8 @@ data class EditActions(
     val onSaveButtonClick: () -> Unit = {},
     val onDeleteButtonClick: () -> Unit = {},
     val onCancelButtonClick: () -> Unit = {},
+
+    val onNotificationSoundChange: (Uri?) ->Unit = {}
 )
 
 @Composable
@@ -158,6 +170,9 @@ fun ReminderEditScreen(
             onEndTimeChange = viewModel::setTimeRangeEnd,
             onNotificationCountChange = viewModel::setRangeNotificationCount,
             onSelectedDaysChanged = viewModel::setSelectedDays,
+
+            onNotificationSoundChange = viewModel::setSoundUri,
+
             onSaveButtonClick = {
                 coroutineScope.launch {
                     viewModel.saveReminder()
@@ -298,6 +313,13 @@ fun EditScreenContent(
             onHasVibrationChange = actions.onToggleVibration,
         )
 
+        //if (reminder.hasSound) {
+        //    SoundSelectRow(
+        //        reminder.soundUri,
+        //        actions.onNotificationSoundChange
+        //    )
+        //}
+
         CustomHorizontalDivider()
 
         DaySelectionRow(
@@ -329,6 +351,15 @@ fun EditScreenContent(
                     minvalue = 1f
                 )
             }
+        }
+
+        CustomHorizontalDivider()
+
+        if (reminder.hasSound) {
+            SoundSelectRow(
+                reminder.soundUri,
+                actions.onNotificationSoundChange
+            )
         }
 
         CustomHorizontalDivider()
@@ -619,6 +650,8 @@ fun CheckRow(
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+
 @Composable
 fun TimeInputRow(
     useRange: Boolean,
@@ -740,6 +773,8 @@ fun TimeSelectorCard(
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+
 @Composable
 fun CountColumn(
     labelId: Int,
@@ -845,6 +880,113 @@ fun DaySelectionRow(
         }
     }
 }
+
+// ------------------------------------------------------------------------------------------------
+
+
+@Composable
+fun SoundSelectRow(
+    currentSoundUri: Uri?,
+    onSoundSelected: (Uri?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    // XXX (TEST)
+    // Can be incorrect if the user has defined SILENT as the defaut ringtone
+
+//    if (currentSoundUri == null) {
+//        val defaultUri: Uri? = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+//        onSoundSelected(defaultUri)
+//    }
+
+    //---------
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        LabelText(R.string.edit_alarm_custom_sound)
+
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.End),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SoundSelectorCard(currentSoundUri, onSoundSelected)
+        }
+    }
+}
+
+@Composable
+fun SoundSelectorCard(
+    currentSoundUri: Uri?,
+    onSoundSelected: (Uri?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val uri = result.data?.let { intent ->
+                IntentCompat.getParcelableExtra(
+                    intent,
+                    RingtoneManager.EXTRA_RINGTONE_PICKED_URI,
+                    Uri::class.java
+                )
+            }
+            onSoundSelected(uri)
+        }
+    }
+
+    val ringtoneSelectionTitle = stringResource(R.string.ringtone_selection_title)
+
+    val intent = remember(currentSoundUri) {
+        Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, ringtoneSelectionTitle)
+
+            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
+
+            // XXX TODO?
+            // the silent ringtone is considered to be at null, same value used
+            // to detect the default ringtone.
+            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true) //
+
+            val uriToSelect = currentSoundUri ?: Settings.System.DEFAULT_NOTIFICATION_URI
+            putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, uriToSelect)
+        }
+    }
+
+    // Note: we only authorize system sound to be accessed, if we need user defined sound we'll need
+    // the READ_EXTERNAL_STORAGE permission and be grant a persistable URI via takePersistableUriPermission
+    // to use it after reboot.
+
+    OutlinedCard(
+        modifier = modifier,
+        onClick = { launcher.launch(intent) },
+        shape = MaterialTheme.shapes.extraSmall,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+    ) {
+        val ringtone = RingtoneManager.getRingtone(context, currentSoundUri)
+        val ringtoneName = ringtone.getTitle(context)
+
+        Text(
+            text = ringtoneName,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+        )
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
 
 @Composable
 fun CustomEditButton(

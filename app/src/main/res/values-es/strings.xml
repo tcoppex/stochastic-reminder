@@ -33,4 +33,5 @@
     <string name="tuto_3_title">Consejo útil</string>
     <string name="tuto_3_message">Las notificaciones silenciadas consumen menos batería</string>
     <string name="tuto_4_title">¡Gracias!</string>
+    <string name="edit_alarm_custom_sound">Tono</string>
 </resources>

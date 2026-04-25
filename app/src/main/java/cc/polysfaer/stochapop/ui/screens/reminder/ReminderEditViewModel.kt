@@ -1,6 +1,7 @@
 package cc.polysfaer.stochapop.ui.screens.reminder
 
 import android.app.Application
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -94,6 +95,10 @@ class ReminderEditViewModel(
         } else {
             it.copy(selectedDays = selectedDays)
         }
+    }
+
+    fun setSoundUri(uri: Uri?) = updateReminderDetails {
+        it.copy(soundUri = uri)
     }
 
     // -----------------------------

@@ -33,4 +33,5 @@
     <string name="tuto_3_title">Cooler Tipp</string>
     <string name="tuto_3_message">Stumme Benachrichtigungen verbrauchen weniger Akku</string>
     <string name="tuto_4_title">Danke!</string>
+    <string name="edit_alarm_custom_sound">Klingelton</string>
 </resources>
