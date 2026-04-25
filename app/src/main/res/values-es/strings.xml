@@ -4,7 +4,7 @@
     <string name="new_screen_name">Nuevo recordatorio</string>
     <string name="home_btn_add">Añadir recordatorio</string>
     <string name="edit_enable_label">Activar</string>
-    <string name="use_random_range_label">Rango aleatorio</string>
+    <string name="time_mode_random_label">Aleatorio</string>
     <string name="edit_time_label">Hora</string>
     <string name="edit_days_selection_label">Días de la semana</string>
     <string name="edit_save_btn">Guardar</string>
@@ -34,4 +34,6 @@
     <string name="tuto_3_message">Las notificaciones silenciadas consumen menos batería</string>
     <string name="tuto_4_title">¡Gracias!</string>
     <string name="edit_alarm_custom_sound">Tono</string>
+    <string name="time_mode_label">Tipo</string>
+    <string name="time_mode_fixed_label">Fijado</string>
 </resources>

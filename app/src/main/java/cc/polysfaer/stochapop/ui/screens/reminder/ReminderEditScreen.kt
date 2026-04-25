@@ -2,7 +2,7 @@
 
 package cc.polysfaer.stochapop.ui.screens.reminder
 
-import android.R.attr.text
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -23,11 +23,14 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -38,7 +41,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Delete
@@ -49,21 +51,23 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MultiChoiceSegmentedButtonRow
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -76,6 +80,7 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -103,8 +108,8 @@ import androidx.core.content.IntentCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import androidx.room.util.TableInfo
 import cc.polysfaer.stochapop.R
+import cc.polysfaer.stochapop.controller.NotificationChannels.hasPostNotificationPermission
 import cc.polysfaer.stochapop.controller.sendNotification
 import cc.polysfaer.stochapop.ui.AppViewModelProvider
 import cc.polysfaer.stochapop.ui.navigation.NavigationDestination
@@ -195,6 +200,22 @@ fun ReminderEditScreen(
         navigateBack()
     }
 
+    // TODO: use one custom scaffold per screen
+//    Scaffold(
+//        topBar = {
+//            TopAppBar(
+//                title = {  },
+//                actions = {
+//                    if (isEditMode) {
+//                        IconButton(onClick = { showDeletionConfirmDialog = true }) {
+//                            Icon(Icons.Outlined.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+//                        }
+//                    }
+//                }
+//            )
+//        },
+
+
     if (viewModel.uiState.initialLoadDone) {
         EditScreenContent(
             isEditMode = viewModel.isEditMode,
@@ -224,7 +245,6 @@ fun EditScreenContent(
         targetValue = if (isFocused) 250.dp else 125.dp,
     )
 
-
     // -------------
 
     var showDeletionConfirmDialog by remember { mutableStateOf(false) }
@@ -240,98 +260,78 @@ fun EditScreenContent(
 
     Column(
         modifier = modifier
-            .padding(horizontal = 12.dp)
-            // .statusBarsPadding()
-            // .safeDrawingPadding()
+            .padding(horizontal = 14.dp)
+            .padding(top = 14.dp)
             .verticalScroll(rememberScrollState())
-            .pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    focusManager.clearFocus()
-                })
-            },
+            .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        ReminderTitleField(
-            reminder.title,
-            actions.onTitleChange,
-            focusManager = focusManager,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 3.dp)
-        )
-        
-        ReminderTextField(
-            reminder.message,
-            actions.onMessageChange,
-            focusManager = focusManager,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 3.dp)
-                .height(animatedHeight),
-            interactionSource = interactionSource
-        )
-
-        // TEST Button
-        CustomEditButton(
-            labelId = R.string.edit_test_btn,
-            onClick = {
-                sendNotification(
-                    context = context,
-                    reminder = reminder.toReminder(), //
-                    backToActivityOnClick = false
-                )
-            },
-            icon = { Icon(
-                imageVector = Icons.Outlined.PlayArrow,
-                contentDescription = null
-            ) },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
+        TitledEditSectionCard(
+            title = "Notification",
+        ) {
+            ReminderTitleField(
+                reminder.title,
+                actions.onTitleChange,
+                focusManager = focusManager,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 3.dp)
             )
-        )
 
-        CustomHorizontalDivider()
+            ReminderTextField(
+                reminder.message,
+                actions.onMessageChange,
+                focusManager = focusManager,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 3.dp)
+                    .height(animatedHeight),
+                interactionSource = interactionSource
+            )
 
-        CheckRow(
-            R.string.edit_enable_label,
-            reminder.enabled,
-            actions.onToggleEnable,
-            modifier = Modifier.fillMaxWidth()
-        )
+            AlarmTypeRow(
+                hasSound = reminder.hasSound,
+                hasVibration = reminder.hasVibration,
+                onHasSoundChange = actions.onToggleSound,
+                onHasVibrationChange = actions.onToggleVibration,
+            )
 
-        CheckRow(
-            R.string.use_random_range_label,
-            reminder.useRandomRange,
-            actions.onToggleRandomRange,
-            modifier = Modifier.fillMaxWidth()
-        )
+            SoundSelectRow(
+                reminder.soundUri,
+                actions.onNotificationSoundChange,
+                enabled = reminder.hasSound
+            )
 
-        AlarmTypeRow(
-            hasSound = reminder.hasSound,
-            hasVibration = reminder.hasVibration,
-            onHasSoundChange = actions.onToggleSound,
-            onHasVibrationChange = actions.onToggleVibration,
-        )
+            OutlinedButton(
+                onClick = {
+                    if (hasPostNotificationPermission(context)) {
+                        sendNotification(context, reminder.toReminder(), false)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            R.string.require_postnotification_toast,
+                            Toast.LENGTH_SHORT
+                        ).apply { show() }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(8.dp)
+            ) {
+                Icon(Icons.Outlined.PlayArrow, null)
+                Spacer(Modifier.size(8.dp))
+                Text(stringResource(R.string.edit_test_btn))
+            }
+        }
 
-        //if (reminder.hasSound) {
-        //    SoundSelectRow(
-        //        reminder.soundUri,
-        //        actions.onNotificationSoundChange
-        //    )
-        //}
+        TitledEditSectionCard(
+            title = "Schedule",
+        ) {
+            TimeModeSegmentedButton(
+                reminder.useRandomRange,
+                actions.onToggleRandomRange,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        CustomHorizontalDivider()
-
-        DaySelectionRow(
-            context = context,
-            selectedDays = reminder.selectedDays,
-            onSelectedDaysChanged = actions.onSelectedDaysChanged,
-            modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
-        )
-
-        CustomHorizontalDivider()
-
-        Column {
             TimeInputRow(
                 useRange = reminder.useRandomRange,
                 startTime = reminder.startTime,
@@ -341,28 +341,23 @@ fun EditScreenContent(
                 is24Hour = is24Hour
             )
 
-            if (reminder.useRandomRange) {
-                CountColumn(
-                    labelId = R.string.edit_count_slider_label,
-                    value = reminder.notificationCount.toFloat(),
-                    onValueChange = {
-                        actions.onNotificationCountChange(it.toInt())
-                    },
-                    minvalue = 1f
-                )
-            }
-        }
+            NotificationCountSlider(
+                labelId = R.string.edit_count_slider_label,
+                value = reminder.notificationCount.toFloat(),
+                onValueChange = {
+                    actions.onNotificationCountChange(it.toInt())
+                },
+                enabled = reminder.useRandomRange,
+                minvalue = 1f,
+            )
 
-        CustomHorizontalDivider()
-
-        if (reminder.hasSound) {
-            SoundSelectRow(
-                reminder.soundUri,
-                actions.onNotificationSoundChange
+            DaySelectionRow(
+                context = context,
+                selectedDays = reminder.selectedDays,
+                onSelectedDaysChanged = actions.onSelectedDaysChanged,
+                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
             )
         }
-
-        CustomHorizontalDivider()
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -397,8 +392,8 @@ fun EditScreenContent(
                         contentDescription = null,
                     ) },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary
                     )
                 )
             } else {
@@ -432,15 +427,200 @@ fun EditScreenContent(
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+
+@Composable
+fun EditSectionCard(
+    modifier: Modifier = Modifier,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
+        shape = RoundedCornerShape(
+            topStart = 0.dp,
+            topEnd = 12.dp,
+            bottomStart = 12.dp,
+            bottomEnd = 12.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            content = content
+        )
+    }
+}
+
+@Composable
+fun TitledEditSectionCard(
+    title: String,
+    modifier: Modifier = Modifier,
+    titleContentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val titleHeight = 24.dp
+    val overlapOffset = titleHeight
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = overlapOffset)
+    ) {
+        EditSectionCard(
+            modifier = Modifier,
+            containerColor = containerColor,
+            content = content
+        )
+
+        Surface(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+//                .padding(start = 2.dp)
+                .height(titleHeight)
+                .offset(y = -overlapOffset),
+            color = containerColor,
+            contentColor = titleContentColor,
+            shape = RoundedCornerShape(
+                topStart = 10.dp,
+                topEnd = 14.dp,
+                bottomStart = 0.dp,
+                bottomEnd = 0.dp
+            )
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(horizontal = 12.dp)
+            ) {
+                Text(
+                    text = title.uppercase(),
+//                    textDecoration = TextDecoration.Underline,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.sp,
+                )
+            }
+        }
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
+
+@Composable
+private fun ClearTrailingIcon(
+    setTextAreaContent: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = { setTextAreaContent("") }
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Clear,
+            contentDescription = "Clear text"
+        )
+    }
+}
+
+@Composable
+private fun SupportingText(
+    value: String,
+    maxLength: Int,
+    modifier: Modifier = Modifier,
+) {
+    if (value.length > 0.75f * maxLength) {
+        Text(
+            modifier = modifier.fillMaxWidth(),
+            text = "${value.length}/${maxLength}",
+            textAlign = TextAlign.End
+        )
+    }
+}
+
+@Composable
+private fun ReminderTitleField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    focusManager: FocusManager
+) {
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        supportingText = { SupportingText(value, ReminderEditSetting.MAX_TITLE_LENGTH) },
+        singleLine = true,
+        label = { Text(stringResource(R.string.edit_reminder_title), fontStyle = FontStyle.Italic) },
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Text,
+            capitalization = KeyboardCapitalization.Sentences,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { focusManager.clearFocus() }
+        ),
+        trailingIcon = { if (value != "") ClearTrailingIcon(onValueChange) },
+        shape = RoundedCornerShape(6.dp),
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun ReminderTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    interactionSource: MutableInteractionSource,
+    focusManager: FocusManager
+) {
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        supportingText = { SupportingText(value, ReminderEditSetting.MAX_MESSAGE_LENGTH) },
+        singleLine = false,
+        label = { Text(stringResource(R.string.edit_reminder_text), fontStyle = FontStyle.Italic) },
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Text,
+            capitalization = KeyboardCapitalization.Sentences,
+            imeAction = ImeAction.Done
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { focusManager.clearFocus() }
+        ),
+        trailingIcon = { if (value != "") ClearTrailingIcon(onValueChange) },
+        shape = RoundedCornerShape(6.dp),
+        modifier = modifier,
+        interactionSource = interactionSource,
+    )
+}
+
+// ------------------------------------------------------------------------------------------------
+
+@Composable
+fun LabelText(
+    labelId: Int,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = stringResource(labelId),
+        fontWeight = FontWeight.Bold,
+        modifier = modifier,
+    )
+}
+
+
 @Composable
 fun OptionChip(
     label: String,
     value: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     iconOn:  @Composable (() -> Unit)? = null,
     iconOff:  @Composable (() -> Unit)? = null
 ) {
     FilterChip(
+        modifier = modifier,
         onClick = onClick,
         label = { Text(label) },
         selected = value,
@@ -503,154 +683,84 @@ fun AlarmTypeRow(
             )
         }
     }
-
 }
 
+//@Composable
+//fun CheckRow(
+//    labelId: Int,
+//    checked: Boolean,
+//    onCheckChanged: (Boolean) -> Unit,
+//    modifier: Modifier = Modifier
+//) {
+//    Row(
+//        modifier = modifier.fillMaxWidth(),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        LabelText(labelId)
+//
+//        Switch(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .wrapContentWidth(Alignment.End),
+//            checked = checked,
+//            onCheckedChange = onCheckChanged,
+//            thumbContent = if (checked) {
+//                {
+//                    Icon(
+//                        imageVector = Icons.Filled.Check,
+//                        contentDescription = null,
+//                        modifier = Modifier.size(SwitchDefaults.IconSize),
+//                    )
+//                }
+//            } else {
+//                null
+//            }
+//        )
+//    }
+//}
+
+// ------------------------------------------------------------------------------------------------
 
 @Composable
-fun CustomHorizontalDivider(modifier: Modifier = Modifier) {
-    HorizontalDivider(
-        modifier = modifier
-            .padding(vertical = 6.dp)
-            .graphicsLayer(alpha = 0.4f),
-
-    )
-}
-
-@Composable
-private fun ClearTrailingIcon(
-    setTextAreaContent: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    IconButton(
-        modifier = modifier,
-        onClick = { setTextAreaContent("") }
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.Clear,
-            contentDescription = "Clear text"
-        )
-    }
-}
-
-@Composable
-private fun SupportingText(
-    value: String,
-    maxLength: Int,
-    modifier: Modifier = Modifier,
-) {
-    if (value.length > 0.75f * maxLength) {
-        Text(
-            modifier = modifier.fillMaxWidth(),
-            text = "${value.length}/${maxLength}",
-            textAlign = TextAlign.End
-        )
-    }
-}
-
-@Composable
-private fun ReminderTitleField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    focusManager: FocusManager
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        supportingText = { SupportingText(value, ReminderEditSetting.MAX_TITLE_LENGTH) },
-        singleLine = true,
-        label = { Text(stringResource(R.string.edit_reminder_title), fontStyle = FontStyle.Italic) },
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Text,
-            capitalization = KeyboardCapitalization.Sentences,
-            imeAction = ImeAction.Done //ImeAction.Next
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = { focusManager.clearFocus() }
-        ),
-        trailingIcon = { if (value != "") ClearTrailingIcon(onValueChange) },
-        shape = RoundedCornerShape(6.dp),
-        modifier = modifier,
-    )
-}
-
-@Composable
-fun ReminderTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    interactionSource: MutableInteractionSource,
-    focusManager: FocusManager
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        supportingText = { SupportingText(value, ReminderEditSetting.MAX_MESSAGE_LENGTH) },
-        singleLine = false,
-        label = { Text(stringResource(R.string.edit_reminder_text), fontStyle = FontStyle.Italic) },
-        keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = KeyboardType.Text,
-            capitalization = KeyboardCapitalization.Sentences,
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = { focusManager.clearFocus() }
-        ),
-        trailingIcon = { if (value != "") ClearTrailingIcon(onValueChange) },
-        shape = RoundedCornerShape(6.dp),
-        modifier = modifier,
-        interactionSource = interactionSource,
-    )
-}
-
-@Composable
-fun LabelText(
-    labelId: Int,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = stringResource(labelId),
-        fontWeight = FontWeight.Bold,
-        modifier = modifier
-    )
-}
-
-@Composable
-fun CheckRow(
-    labelId: Int,
+fun TimeModeSegmentedButton(
     checked: Boolean,
     onCheckChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var selectedIndex by remember {
+        mutableIntStateOf(if (checked) 1 else 0)
+    }
+    val options = listOf(
+        stringResource(R.string.time_mode_fixed_label),
+        stringResource(R.string.time_mode_random_label)
+    )
+
     Row(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        LabelText(labelId)
+        LabelText(R.string.time_mode_label)
 
-        Switch(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.End),
-            checked = checked,
-            onCheckedChange = onCheckChanged,
-            thumbContent = if (checked) {
-                {
-                    Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = null,
-                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                    )
-                }
-            } else {
-                null
+        SingleChoiceSegmentedButtonRow {
+            options.forEachIndexed { index, label ->
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = options.size
+                    ),
+                    onClick = {
+                        selectedIndex = index
+                        onCheckChanged(selectedIndex == 1)
+                    },
+                    selected = index == selectedIndex,
+                    label = { Text(label, fontSize = 12.sp) },
+                    icon = {},
+                )
             }
-        )
+        }
     }
 }
-
-// ------------------------------------------------------------------------------------------------
 
 @Composable
 fun TimeInputRow(
@@ -773,17 +883,16 @@ fun TimeSelectorCard(
     }
 }
 
-// ------------------------------------------------------------------------------------------------
-
 @Composable
-fun CountColumn(
+fun NotificationCountSlider(
     labelId: Int,
     value: Float,
     onValueChange: (Float) -> Unit,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
     minvalue: Float = 1f
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.graphicsLayer(alpha = if (enabled) 1.0f else 0.5f)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -792,6 +901,7 @@ fun CountColumn(
         }
         Slider(
             modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
             value = value,
             onValueChange = onValueChange,
             valueRange = minvalue..ReminderEditSetting.maxRandomNotificationCount.toFloat(),
@@ -799,7 +909,7 @@ fun CountColumn(
                 Box(modifier = Modifier
                     .size(42.dp)
                     .background(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                         shape = CircleShape
                     ),
                     contentAlignment = Alignment.Center,
@@ -807,13 +917,26 @@ fun CountColumn(
                     Text(
                         text = value.toInt().toString(),
                         style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 }
             },
             track = { sliderState ->
                 SliderDefaults.Track(
                     sliderState = sliderState,
+                    colors = SliderColors(
+                        activeTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+                        activeTickColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.4f),
+                        inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        inactiveTickColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+
+                        thumbColor = MaterialTheme.colorScheme.surfaceVariant,
+                        disabledThumbColor = MaterialTheme.colorScheme.surfaceVariant,
+                        disabledActiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        disabledActiveTickColor = MaterialTheme.colorScheme.surfaceVariant,
+                        disabledInactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        disabledInactiveTickColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
                     thumbTrackGapSize = 2.dp,
                     modifier = Modifier.height(4.dp)
                 )
@@ -888,9 +1011,9 @@ fun DaySelectionRow(
 fun SoundSelectRow(
     currentSoundUri: Uri?,
     onSoundSelected: (Uri?) -> Unit,
-    modifier: Modifier = Modifier
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
 
     // XXX (TEST)
     // Can be incorrect if the user has defined SILENT as the defaut ringtone
@@ -902,29 +1025,6 @@ fun SoundSelectRow(
 
     //---------
 
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        LabelText(R.string.edit_alarm_custom_sound)
-
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.End),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            SoundSelectorCard(currentSoundUri, onSoundSelected)
-        }
-    }
-}
-
-@Composable
-fun SoundSelectorCard(
-    currentSoundUri: Uri?,
-    onSoundSelected: (Uri?) -> Unit,
-    modifier: Modifier = Modifier
-) {
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
@@ -961,30 +1061,46 @@ fun SoundSelectorCard(
         }
     }
 
+    val ringtone = RingtoneManager.getRingtone(context, currentSoundUri)
+    val ringtoneName = ringtone.getTitle(context)
+
     // Note: we only authorize system sound to be accessed, if we need user defined sound we'll need
     // the READ_EXTERNAL_STORAGE permission and be grant a persistable URI via takePersistableUriPermission
     // to use it after reboot.
 
-    OutlinedCard(
-        modifier = modifier,
-        onClick = { launcher.launch(intent) },
-        shape = MaterialTheme.shapes.extraSmall,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-        ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-    ) {
-        val ringtone = RingtoneManager.getRingtone(context, currentSoundUri)
-        val ringtoneName = ringtone.getTitle(context)
+    //---------
 
-        Text(
-            text = ringtoneName,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+    Row(
+        modifier = modifier.fillMaxWidth().graphicsLayer(alpha = if (enabled) 1.0f else 0.5f),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        LabelText(
+            R.string.edit_alarm_custom_sound,
+            modifier = Modifier
         )
+
+        OutlinedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.End),
+            onClick = { launcher.launch(intent) },
+            shape = MaterialTheme.shapes.extraSmall,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+            ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            enabled = enabled
+        ) {
+            Text(
+                text = ringtoneName,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            )
+        }
     }
 }
+
 
 // ------------------------------------------------------------------------------------------------
 
