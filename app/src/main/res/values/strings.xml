@@ -5,7 +5,7 @@
     <string name="home_btn_add">Add Reminder</string>
     <string name="edit_enable_label">Enable</string>
     <string name="time_mode_random_label">Random</string>
-    <string name="edit_time_label">Time</string>
+    <string name="edit_time_label">Timetable</string>
     <string name="edit_days_selection_label">Days of the week</string>
     <string name="edit_save_btn">Save</string>
     <string name="edit_test_btn">Test</string>
@@ -23,7 +23,7 @@
     <string name="top_bar_arrow_desc">Back</string>
     <string name="edit_cancel_btn">Cancel</string>
     <string name="day_selection_toast">At least one day must be selected.</string>
-    <string name="edit_label_alarm_type">Alarm type</string>
+    <string name="edit_label_alarm_type">Alerts</string>
     <string name="edit_alarm_type_sound">Sound</string>
     <string name="edit_alarm_type_vibration">Vibration</string>
     <string name="tuto_1_message">- Single tap to edit,\n- Double tap to enable/disable,\n- Left swipe to delete.</string>
@@ -38,9 +38,9 @@
 
     <string name="time_mode_label">Type</string>
     <string name="time_mode_fixed_label">Fixed</string>
+    <string name="edit_section_card_schedule">Schedule</string>
+    <string name="edit_section_card_content">Content</string>
 
     <string name="ringtone_selection_title" translatable="false">Select Notification Sound</string>
     <string name="require_postnotification_toast" translatable="false">You need to enable notification permission for this to work.</string>
-    <string name="edit_section_card_schedule" translatable="false">Schedule</string>
-    <string name="edit_section_card_content" translatable="false">Content</string>
 </resources>

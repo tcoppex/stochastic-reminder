@@ -36,4 +36,6 @@
     <string name="edit_alarm_custom_sound">Klingelton</string>
     <string name="time_mode_label">Typ</string>
     <string name="time_mode_fixed_label">Behoben</string>
+    <string name="edit_section_card_schedule">Zeitplan</string>
+    <string name="edit_section_card_content">Inhalt</string>
 </resources>

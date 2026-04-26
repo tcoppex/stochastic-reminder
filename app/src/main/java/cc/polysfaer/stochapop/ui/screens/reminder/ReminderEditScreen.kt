@@ -3,6 +3,7 @@
 package cc.polysfaer.stochapop.ui.screens.reminder
 
 
+import android.R.attr.enabled
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -106,6 +107,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.IntentCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -351,6 +355,15 @@ fun EditScreenContent(
         TitledEditSectionCard(
             title = stringResource(R.string.edit_section_card_schedule),
         ) {
+            DaySelectionRow(
+                context = context,
+                selectedDays = reminder.selectedDays,
+                onSelectedDaysChanged = actions.onSelectedDaysChanged,
+                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+            )
+
+            CustomHorizontalDivider()
+
             TimeModeSegmentedButton(
                 reminder.useRandomRange,
                 actions.onToggleRandomRange,
@@ -374,15 +387,6 @@ fun EditScreenContent(
                 },
                 enabled = reminder.useRandomRange,
                 minvalue = 1f,
-            )
-
-            CustomHorizontalDivider()
-
-            DaySelectionRow(
-                context = context,
-                selectedDays = reminder.selectedDays,
-                onSelectedDaysChanged = actions.onSelectedDaysChanged,
-                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
             )
         }
 
@@ -455,6 +459,8 @@ fun EditScreenContent(
 }
 
 // ------------------------------------------------------------------------------------------------
+
+// -- Section Widgets --
 
 const val EditSectionCardAlpha = 0.45f //
 
@@ -535,6 +541,43 @@ fun TitledEditSectionCard(
     }
 }
 
+
+
+// ------------------------------------------------------------------------------------------------
+
+// -- Shared Widgets --
+
+@Composable
+fun LabelText(
+    labelId: Int,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = stringResource(labelId),
+        fontWeight = FontWeight.Bold,
+        modifier = modifier,
+    )
+}
+
+
+@Composable
+fun OptionChip(
+    label: String,
+    value: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    iconOn:  @Composable (() -> Unit)? = null,
+    iconOff:  @Composable (() -> Unit)? = null
+) {
+    FilterChip(
+        modifier = modifier,
+        onClick = onClick,
+        label = { Text(label) },
+        selected = value,
+        trailingIcon = if (value) iconOn else iconOff,
+    )
+}
+
 @Composable
 fun CustomHorizontalDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
@@ -545,7 +588,68 @@ fun CustomHorizontalDivider(modifier: Modifier = Modifier) {
         )
 }
 
+@Composable
+fun CustomEditButton(
+    labelId: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
+    ),
+    icon: (@Composable () -> Unit)? = null
+) {
+    Button(
+        onClick = onClick,
+        colors = colors,
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        if (icon != null) {
+            icon()
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+        }
+        Text(stringResource(labelId))
+    }
+}
+
+//@Composable
+//fun CheckRow(
+//    labelId: Int,
+//    checked: Boolean,
+//    onCheckChanged: (Boolean) -> Unit,
+//    modifier: Modifier = Modifier
+//) {
+//    Row(
+//        modifier = modifier.fillMaxWidth(),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        LabelText(labelId)
+//
+//        Switch(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .wrapContentWidth(Alignment.End),
+//            checked = checked,
+//            onCheckedChange = onCheckChanged,
+//            thumbContent = if (checked) {
+//                {
+//                    Icon(
+//                        imageVector = Icons.Filled.Check,
+//                        contentDescription = null,
+//                        modifier = Modifier.size(SwitchDefaults.IconSize),
+//                    )
+//                }
+//            } else {
+//                null
+//            }
+//        )
+//    }
+//}
+
 // ------------------------------------------------------------------------------------------------
+
+// -- "Content" section Widgets --
 
 @Composable
 private fun ClearTrailingIcon(
@@ -634,39 +738,6 @@ fun ReminderTextField(
     )
 }
 
-// ------------------------------------------------------------------------------------------------
-
-@Composable
-fun LabelText(
-    labelId: Int,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = stringResource(labelId),
-        fontWeight = FontWeight.Bold,
-        modifier = modifier,
-    )
-}
-
-
-@Composable
-fun OptionChip(
-    label: String,
-    value: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    iconOn:  @Composable (() -> Unit)? = null,
-    iconOff:  @Composable (() -> Unit)? = null
-) {
-    FilterChip(
-        modifier = modifier,
-        onClick = onClick,
-        label = { Text(label) },
-        selected = value,
-        trailingIcon = if (value) iconOn else iconOff,
-    )
-}
-
 @Composable
 fun AlarmTypeRow(
     hasSound: Boolean,
@@ -724,41 +795,119 @@ fun AlarmTypeRow(
     }
 }
 
-//@Composable
-//fun CheckRow(
-//    labelId: Int,
-//    checked: Boolean,
-//    onCheckChanged: (Boolean) -> Unit,
-//    modifier: Modifier = Modifier
-//) {
-//    Row(
-//        modifier = modifier.fillMaxWidth(),
-//        verticalAlignment = Alignment.CenterVertically
-//    ) {
-//        LabelText(labelId)
-//
-//        Switch(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .wrapContentWidth(Alignment.End),
-//            checked = checked,
-//            onCheckedChange = onCheckChanged,
-//            thumbContent = if (checked) {
-//                {
-//                    Icon(
-//                        imageVector = Icons.Filled.Check,
-//                        contentDescription = null,
-//                        modifier = Modifier.size(SwitchDefaults.IconSize),
-//                    )
-//                }
-//            } else {
-//                null
-//            }
-//        )
-//    }
-//}
+@Composable
+fun SoundSelectRow(
+    currentSoundUri: Uri?,
+    onSoundSelected: (Uri?) -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    //---------
+
+    /* Capture the default ringtone name in case the user change it while using the app. */
+
+    val getRingtoneName: (Context, Uri?) -> String = { ctx, uri ->
+        RingtoneManager
+            .getRingtone(ctx, uri)
+            .getTitle(context)
+    }
+
+//    val ringtoneName = getRingtoneName(context, currentSoundUri)
+
+    var ringtoneName by remember(currentSoundUri) {
+        mutableStateOf( getRingtoneName(context, currentSoundUri) )
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val latestName = getRingtoneName(context, currentSoundUri)
+                if (ringtoneName != latestName) {
+                    ringtoneName = latestName
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    //---------
+
+    /* System's Ringtone Picker launcher. */
+
+    val ringtoneSelectionTitle = stringResource(R.string.ringtone_selection_title)
+
+    // Note: we only authorize system ringtones to be accessed, if we would need user-defined ones we'll need
+    // the READ_EXTERNAL_STORAGE permission and request a persistable URI via takePersistableUriPermission
+    // to use it after reboot.
+    val intent = remember(currentSoundUri) {
+        Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, ringtoneSelectionTitle)
+            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
+            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true)
+            putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, currentSoundUri)
+        }
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val uri = result.data?.let { intent ->
+                IntentCompat.getParcelableExtra(
+                    intent,
+                    RingtoneManager.EXTRA_RINGTONE_PICKED_URI,
+                    Uri::class.java
+                )
+            }
+            onSoundSelected(uri)
+        }
+    }
+
+    //---------
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .graphicsLayer(alpha = alphaGreyOut(enabled)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        LabelText(
+            R.string.edit_alarm_custom_sound,
+            modifier = Modifier
+        )
+
+        OutlinedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.End),
+            onClick = { launcher.launch(intent) },
+            shape = MaterialTheme.shapes.extraSmall,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+            ),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            enabled = enabled
+        ) {
+            Text(
+                text = ringtoneName,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+            )
+        }
+    }
+}
 
 // ------------------------------------------------------------------------------------------------
+
+// -- "Schedule" section Widgets --
 
 @Composable
 fun TimeModeSegmentedButton(
@@ -823,16 +972,24 @@ fun TimeInputRow(
                 .wrapContentWidth(Alignment.End),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            when (useRange) {
-                false -> {
-                    TimeSelectorCard(startTime, onStartTimeChange, is24Hour, Modifier)
-                }
-                true -> {
-                    TimeSelectorCard(startTime, onStartTimeChange, is24Hour, Modifier)
-                    Text(text = " - ")
-                    TimeSelectorCard(endTime, onEndTimeChange, is24Hour, Modifier)
-                }
-            }
+            val alpha = alphaGreyOut(useRange)
+
+            TimeSelectorCard(startTime, onStartTimeChange, is24Hour, Modifier)
+
+            Text(text = " - ", Modifier.graphicsLayer(alpha = alpha))
+            TimeSelectorCard(endTime, onEndTimeChange, is24Hour, Modifier.graphicsLayer(alpha = alpha), enabled = useRange)
+
+
+//            when (useRange) {
+//                false -> {
+//                    TimeSelectorCard(startTime, onStartTimeChange, is24Hour, Modifier)
+//                }
+//                true -> {
+//                    TimeSelectorCard(startTime, onStartTimeChange, is24Hour, Modifier)
+//                    Text(text = " - ")
+//                    TimeSelectorCard(endTime, onEndTimeChange, is24Hour, Modifier)
+//                }
+//            }
         }
     }
 }
@@ -842,7 +999,8 @@ fun TimeSelectorCard(
     time: LocalTime,
     onTimeChange: (LocalTime) -> Unit,
     is24Hour: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     val formatter = remember { DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT) }
 
@@ -862,7 +1020,8 @@ fun TimeSelectorCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primary,
         ),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+        enabled = enabled,
     ) {
         Text(
             text = time.format(formatter),
@@ -931,7 +1090,9 @@ fun NotificationCountSlider(
     modifier: Modifier = Modifier,
     minvalue: Float = 1f
 ) {
-    Column(modifier = modifier.graphicsLayer(alpha = if (enabled) 1.0f else 0.5f)) {
+//    if (!enabled) return
+
+    Column(modifier = modifier.graphicsLayer(alpha = alphaGreyOut(enabled))) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -1046,121 +1207,6 @@ fun DaySelectionRow(
 // ------------------------------------------------------------------------------------------------
 
 @Composable
-fun SoundSelectRow(
-    currentSoundUri: Uri?,
-    onSoundSelected: (Uri?) -> Unit,
-    enabled: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    val context = LocalContext.current
-
-    val ringtoneName = RingtoneManager
-        .getRingtone(context, currentSoundUri)
-        .getTitle(context)
-
-    // TODO: check special case where user defined SILENT as default Ringtone in their system.
-    //if (currentSoundUri == null) {
-    //    val defaultUri: Uri? = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-    //    onSoundSelected(defaultUri)
-    //}
-
-    //---------
-
-    /* System's Ringtone Picker launcher. */
-
-    val ringtoneSelectionTitle = stringResource(R.string.ringtone_selection_title)
-
-    // Note: we only authorize system ringtones to be accessed, if we would need user-defined ones we'll need
-    // the READ_EXTERNAL_STORAGE permission and request a persistable URI via takePersistableUriPermission
-    // to use it after reboot.
-    val intent = remember(currentSoundUri) {
-        Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
-            putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION)
-            putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, ringtoneSelectionTitle)
-            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
-            putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true)
-            putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, currentSoundUri)
-        }
-    }
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val uri = result.data?.let { intent ->
-                IntentCompat.getParcelableExtra(
-                    intent,
-                    RingtoneManager.EXTRA_RINGTONE_PICKED_URI,
-                    Uri::class.java
-                )
-            }
-            onSoundSelected(uri)
-        }
-    }
-
-    //---------
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .graphicsLayer(alpha = if (enabled) 1.0f else 0.5f),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        LabelText(
-            R.string.edit_alarm_custom_sound,
-            modifier = Modifier
-        )
-
-        OutlinedCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.End),
-            onClick = { launcher.launch(intent) },
-            shape = MaterialTheme.shapes.extraSmall,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-            ),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-            enabled = enabled
-        ) {
-            Text(
-                text = ringtoneName,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-            )
-        }
-    }
-}
-
-// ------------------------------------------------------------------------------------------------
-
-@Composable
-fun CustomEditButton(
-    labelId: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    colors: ButtonColors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary
-    ),
-    icon: (@Composable () -> Unit)? = null
-) {
-    Button(
-        onClick = onClick,
-        colors = colors,
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-    ) {
-        if (icon != null) {
-            icon()
-            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        }
-        Text(stringResource(labelId))
-    }
-}
-
-@Composable
 fun ConfirmDeletionDialog(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit
@@ -1173,6 +1219,10 @@ fun ConfirmDeletionDialog(
         confirmButton = { TextButton(onClick = onConfirmation) { Text(stringResource(R.string.dialog_confirm_label)) } },
         dismissButton = { TextButton(onClick = onDismissRequest) { Text(stringResource(R.string.dialog_dismiss_label)) } }
     )
+}
+
+fun alphaGreyOut(enabled: Boolean, outValue: Float = 0.25f): Float {
+    return if (enabled) 1.0f else outValue
 }
 
 // ------------------------------------------------------------------------------------------------
