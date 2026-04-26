@@ -129,6 +129,238 @@ fun HomeScreenContent(
     }
 }
 
+// ------------------------------------------------------------------------------------------------
+
+@Composable
+fun ReminderList(
+    reminderList: List<Reminder>, //
+    modifier: Modifier = Modifier,
+    onEditReminder: (Reminder) -> Unit = {},
+    onToggleReminder: (Reminder) -> Unit = {},
+    onDeleteReminder: (Reminder) -> Unit = {},
+) {
+    val formatter = remember { DateTimeFormatter.ofPattern("EEE", Locale.getDefault()) }
+    val getDayFirstLetter = { day : DayOfWeek ->
+        formatter.format(day)
+            .first()
+            .uppercase()
+    }
+
+    LazyColumn(
+        modifier = modifier.padding(bottom = 12.dp),
+        contentPadding = PaddingValues(bottom = 80.dp),
+        userScrollEnabled = true
+    ) {
+        items(items = reminderList, key = { it.id }) { reminder ->
+            SwipeBox(
+                onSwipLeft = { onDeleteReminder(reminder) },
+            ) {
+                ElasticSlideItem {
+                    ReminderCard(
+                        reminder = reminder,
+                        onClick = { onEditReminder(reminder) },
+                        onDoubleClick = { onToggleReminder(reminder) },
+                        getDayFirstLetter = getDayFirstLetter,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                    )
+                }
+            }
+
+            HorizontalDivider(
+                thickness = 1.dp,
+                modifier = Modifier.graphicsLayer(alpha=0.25f),
+            )
+        }
+    }
+}
+
+@Composable
+fun CardInfoText(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        fontStyle = FontStyle.Italic,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun AlarmIcon(
+    @DrawableRes id: Int,
+    contentDescription: String?,
+    modifier: Modifier = Modifier
+) {
+    Icon(
+        painter = painterResource(id),
+        contentDescription = contentDescription,
+        modifier = modifier.size(14.dp)
+    )
+}
+
+@Composable
+fun ReminderCard(
+    reminder: Reminder,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+    onDoubleClick: () -> Unit = {},
+    onLongClick: () -> Unit = {},
+    getDayFirstLetter: (DayOfWeek) -> String = { "⦁" },
+) {
+    val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = onClick,
+                onDoubleClick = onDoubleClick,
+                onLongClick = onLongClick,
+            )
+        ,
+        shape = MaterialTheme.shapes.extraSmall,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+        ),
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(4.dp)
+                .graphicsLayer(alpha = if (reminder.enabled) 1f else 0.33f),
+        ) {
+            if (!reminder.title.isEmpty()) {
+                Text(
+                    text = reminder.title,
+                    modifier = Modifier.padding(bottom = 3.dp),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+
+            // -----------------------
+
+            Row(
+                modifier = Modifier.graphicsLayer(alpha = 0.4f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (!reminder.selectedDays.isEmpty()) {
+                    Row(Modifier
+                        .border(
+                            width = 0.25.dp,
+                            color = Color.DarkGray.copy(alpha = 0.3f),
+                            shape = CircleShape,
+                        )
+                        .padding(horizontal = 3.dp, vertical = 0.5.dp)
+                    ) {
+                        DayOfWeek.entries.forEachIndexed { index, day ->
+                            val alpha = if (reminder.selectedDays.contains(day)) 1.0f else 0.25f
+                            CardInfoText(
+                                text = getDayFirstLetter(day),
+                                modifier = Modifier.graphicsLayer(alpha = alpha)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.padding(horizontal = 5.dp))
+                }
+
+                CardInfoText(reminder.startTime.format(formatter))
+                if (reminder.useRandomRange) {
+                    CardInfoText(" - ${reminder.endTime.format(formatter)}")
+                    Spacer(modifier = Modifier.padding(horizontal = 5.dp))
+                    CardInfoText("x${reminder.notificationCount}")
+                    Icon(
+                        painter = painterResource(id = R.drawable.casino_24px),
+                        contentDescription = "dice icon",
+                        modifier = Modifier.size(14.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.padding(horizontal = 5.dp))
+
+                if (!reminder.hasSound && !reminder.hasVibration) {
+                    AlarmIcon(R.drawable.volume_off_24px, "no alarm")
+                } else {
+                    if (reminder.hasSound) {
+                        AlarmIcon(R.drawable.volume_up_24px, "sound alarm")
+                        Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                    }
+                    if (reminder.hasVibration) {
+                        AlarmIcon(R.drawable.mobile_vibrate_24px, "vibration alarm")
+                    }
+                }
+
+            }
+
+            // -----------------------
+
+            Text(
+                text = reminder.message,
+                modifier = Modifier
+                    .padding(start = 12.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+}
+
+// ------------------------------------------------------------------------------------------------
+
+@Composable
+fun NotificationRationaleDialog(
+    onDismissRequest: () -> Unit,
+    onConfirmRequest: () -> Unit
+) {
+    AlertDialog(
+        icon = { Icon(imageVector = Icons.Outlined.Info, contentDescription = null) },
+        title = { Text(text = stringResource(R.string.permission_required_title)) },
+        text = { Text(text = stringResource(R.string.permission_required_message)) },
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = onConfirmRequest) {
+                Text(stringResource(R.string.dialog_confirm_label))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(stringResource(R.string.dialog_dismiss_label))
+            }
+        }
+    )
+}
+
+@Composable
+fun AddReminderButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(22.dp),
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        Icon(imageVector = Icons.Outlined.Add, contentDescription = null)
+        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+        Text(stringResource(R.string.home_btn_add))
+    }
+}
+
+
+fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    return null
+}
+
+
 @Composable
 fun AddReminderWithPermissionButton(
     onClick: () -> Unit,
@@ -207,238 +439,6 @@ fun AddReminderWithPermissionButton(
                     haveClicked = false
                 }
             )
-        }
-    }
-}
-
-fun Context.findActivity(): Activity? {
-    var context = this
-    while (context is ContextWrapper) {
-        if (context is Activity) return context
-        context = context.baseContext
-    }
-    return null
-}
-
-
-@Composable
-fun AddReminderButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(22.dp),
-        shape = MaterialTheme.shapes.medium,
-    ) {
-        Icon(imageVector = Icons.Outlined.Add, contentDescription = null)
-        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Text(stringResource(R.string.home_btn_add))
-    }
-}
-
-@Composable
-fun NotificationRationaleDialog(
-    onDismissRequest: () -> Unit,
-    onConfirmRequest: () -> Unit
-) {
-    AlertDialog(
-        icon = { Icon(imageVector = Icons.Outlined.Info, contentDescription = null) },
-        title = { Text(text = stringResource(R.string.permission_required_title)) },
-        text = { Text(text = stringResource(R.string.permission_required_message)) },
-        onDismissRequest = onDismissRequest,
-        confirmButton = {
-            TextButton(onClick = onConfirmRequest) {
-                Text(stringResource(R.string.dialog_confirm_label))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(R.string.dialog_dismiss_label))
-            }
-        }
-    )
-}
-
-@Composable
-fun ReminderList(
-    reminderList: List<Reminder>, //
-    modifier: Modifier = Modifier,
-    onEditReminder: (Reminder) -> Unit = {},
-    onToggleReminder: (Reminder) -> Unit = {},
-    onDeleteReminder: (Reminder) -> Unit = {},
-) {
-    val formatter = remember { DateTimeFormatter.ofPattern("EEE", Locale.getDefault()) }
-    val getDayFirstLetter = { day : DayOfWeek ->
-        formatter.format(day)
-            .first()
-            .uppercase()
-    }
-
-    LazyColumn(
-        modifier = modifier.padding(bottom = 12.dp),
-        contentPadding = PaddingValues(bottom = 80.dp),
-        userScrollEnabled = true
-    ) {
-        items(items = reminderList, key = { it.id }) { reminder ->
-            SwipeBox(
-                onSwipLeft = { onDeleteReminder(reminder) },
-            ) {
-                ElasticSlideItem {
-                    ReminderCard(
-                        reminder = reminder,
-                        onClick = { onEditReminder(reminder) },
-                        onDoubleClick = { onToggleReminder(reminder) },
-                        getDayFirstLetter = getDayFirstLetter,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    )
-                }
-            }
-
-            HorizontalDivider(
-                thickness = 1.dp,
-                modifier = Modifier.graphicsLayer(alpha=0.75f),
-            )
-        }
-    }
-}
-
-@Composable
-fun CardInfoText(
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.bodySmall,
-        fontStyle = FontStyle.Italic,
-        modifier = modifier
-    )
-}
-
-@Composable
-fun AlarmIcon(
-    @DrawableRes id: Int,
-    contentDescription: String?,
-    modifier: Modifier = Modifier
-) {
-    Icon(
-        painter = painterResource(id),
-        contentDescription = contentDescription,
-        modifier = modifier.size(14.dp)
-    )
-}
-
-@Composable
-fun ReminderCard(
-    reminder: Reminder,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-    onDoubleClick: () -> Unit = {},
-    onLongClick: () -> Unit = {},
-    getDayFirstLetter: (DayOfWeek) -> String = { "⦁" },
-) {
-    val formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .combinedClickable(
-                onClick = onClick,
-                onDoubleClick = onDoubleClick,
-                onLongClick = onLongClick,
-            )
-        ,
-        shape = MaterialTheme.shapes.extraSmall,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .graphicsLayer(alpha = if (reminder.enabled) 1f else 0.33f)
-            ) {
-                if (!reminder.title.isEmpty()) {
-                    Text(
-                        text = reminder.title,
-                        modifier = Modifier.padding(bottom = 3.dp),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontStyle = FontStyle.Normal,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-
-                // -----------------------
-
-                Row(
-                    modifier = Modifier.graphicsLayer(alpha = 0.4f),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (!reminder.selectedDays.isEmpty()) {
-                        Row(Modifier
-                            .border(
-                                width = 0.25.dp,
-                                color = Color.DarkGray.copy(alpha = 0.3f),
-                                shape = CircleShape,
-                            )
-                            .padding(horizontal = 3.dp, vertical = 0.5.dp)
-                        ) {
-                            DayOfWeek.entries.forEachIndexed { index, day ->
-                                val alpha = if (reminder.selectedDays.contains(day)) 1.0f else 0.25f
-                                CardInfoText(
-                                    text = getDayFirstLetter(day),
-                                    modifier = Modifier.graphicsLayer(alpha = alpha)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                    }
-
-                    CardInfoText(reminder.startTime.format(formatter))
-                    if (reminder.useRandomRange) {
-                        CardInfoText(" - ${reminder.endTime.format(formatter)}")
-                        Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                        CardInfoText("x${reminder.notificationCount}")
-                        Icon(
-                            painter = painterResource(id = R.drawable.casino_24px),
-                            contentDescription = "dice icon",
-                            modifier = Modifier.size(14.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-
-                    if (!reminder.hasSound && !reminder.hasVibration) {
-                        AlarmIcon(R.drawable.volume_off_24px, "no alarm")
-                    } else {
-                        if (reminder.hasSound) {
-                            AlarmIcon(R.drawable.volume_up_24px, "sound alarm")
-                            Spacer(modifier = Modifier.padding(horizontal = 2.dp))
-                        }
-                        if (reminder.hasVibration) {
-                            AlarmIcon(R.drawable.mobile_vibrate_24px, "vibration alarm")
-                        }
-                    }
-
-                }
-
-                // -----------------------
-
-                Text(
-                    text = reminder.message,
-                    modifier = Modifier
-                        .padding(start = 12.dp, end = 4.dp, top = 6.dp, bottom = 6.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
         }
     }
 }
