@@ -511,7 +511,7 @@ fun TitledEditSectionCard(
         Surface(
             modifier = Modifier
                 .align(Alignment.TopStart)
-//                .padding(start = 2.dp)
+                // .padding(start = 2.dp)
                 .height(titleHeight)
                 .offset(y = -overlapOffset),
             color = containerColor,
@@ -529,7 +529,7 @@ fun TitledEditSectionCard(
             ) {
                 Text(
                     text = title.uppercase(),
-//                    textDecoration = TextDecoration.Underline,
+                    // textDecoration = TextDecoration.Underline,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 2.sp,
@@ -580,7 +580,7 @@ fun OptionChip(
 fun CustomHorizontalDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
         modifier = modifier
-            .padding(vertical = 6.dp)
+            .padding(vertical = 5.dp)
             .graphicsLayer(alpha = 0.4f),
 
         )
