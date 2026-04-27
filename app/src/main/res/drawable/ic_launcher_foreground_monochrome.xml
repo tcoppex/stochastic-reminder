@@ -9,12 +9,6 @@
       android:translateX="15.634286"
       android:translateY="15.634286">
     <path
-        android:pathData="M35.905,36.014m-27.035,0a27.035,27.035 0,1 1,54.069 0a27.035,27.035 0,1 1,-54.069 0"
-        android:fillColor="#fcea2b"/>
-    <path
-        android:pathData="M36.006,36.037m-21.871,0a21.871,21.871 0,1 1,43.742 0a21.871,21.871 0,1 1,-43.742 0"
-        android:fillColor="#fff"/>
-    <path
         android:pathData="M55.109,25.38a21.863,21.863 0,1 1,-8.094 -8.245"
         android:strokeLineJoin="round"
         android:strokeWidth="2"

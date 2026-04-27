@@ -40,13 +40,13 @@ object NotificationChannels {
     ): String {
         val importanceStr = if (isUrgent) "URGENT" else "DEFAULT"
         val visibilityStr = if (isPublic) "PUBLIC" else "PRIVATE"
-        val soundStr      = if (hasSound) "SOUND" else "NONE"
-        val vibrationStr  = if (hasVibration) "VIBRATION" else "NONE"
+        val soundStr      = if (hasSound) "S" else "NS"
+        val vibrationStr  = if (hasVibration) "V" else "NV"
 
         val soundHash = if (hasSound && (soundUri != null)) {
-            soundUri.toString().hashCode().coerceAtLeast(0)
+            soundUri.toString().hashCode().toString()
         } else {
-            "NONE"
+            "NOURI"
         }
 
         val id = "${importanceStr}_${visibilityStr}_${soundStr}_${vibrationStr}_${soundHash}"

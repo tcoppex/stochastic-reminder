@@ -264,7 +264,7 @@ fun EditScreenContent(
 
     Column(
         modifier = modifier
-            .padding(horizontal = 11.5.dp)
+            .padding(horizontal = 10.5.dp)
             .padding(top = 14.dp)
             .verticalScroll(rememberScrollState())
             .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
@@ -479,7 +479,7 @@ fun EditSectionCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(horizontal = 10.0.dp, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             content = content
         )
@@ -511,7 +511,7 @@ fun TitledEditSectionCard(
         Surface(
             modifier = Modifier
                 .align(Alignment.TopStart)
-//                .padding(start = 2.dp)
+                // .padding(start = 2.dp)
                 .height(titleHeight)
                 .offset(y = -overlapOffset),
             color = containerColor,
@@ -529,7 +529,7 @@ fun TitledEditSectionCard(
             ) {
                 Text(
                     text = title.uppercase(),
-//                    textDecoration = TextDecoration.Underline,
+                    // textDecoration = TextDecoration.Underline,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 2.sp,
@@ -580,7 +580,7 @@ fun OptionChip(
 fun CustomHorizontalDivider(modifier: Modifier = Modifier) {
     HorizontalDivider(
         modifier = modifier
-            .padding(vertical = 6.dp)
+            .padding(vertical = 5.dp)
             .graphicsLayer(alpha = 0.4f),
 
         )
@@ -1171,6 +1171,7 @@ fun DaySelectionRow(
                 days.forEachIndexed { index, day ->
                     val isSelected = selectedDays.contains(day)
                     SegmentedButton(
+                        modifier = Modifier.weight(1f),
                         shape = SegmentedButtonDefaults.itemShape(index = index, count = days.size),
                         checked = isSelected,
                         onCheckedChange = {
@@ -1192,7 +1193,11 @@ fun DaySelectionRow(
                         },
                         icon = {},
                     ) {
-                        Text(getDayLabel(day), fontSize = 12.sp)
+                        Text(
+                            text = getDayLabel(day),
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                        )
                     }
                 }
             }
