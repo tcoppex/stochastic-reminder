@@ -264,7 +264,7 @@ fun EditScreenContent(
 
     Column(
         modifier = modifier
-            .padding(horizontal = 11.5.dp)
+            .padding(horizontal = 10.5.dp)
             .padding(top = 14.dp)
             .verticalScroll(rememberScrollState())
             .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
@@ -479,7 +479,7 @@ fun EditSectionCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 9.0.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = 10.0.dp, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             content = content
         )
