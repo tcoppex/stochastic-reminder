@@ -479,7 +479,7 @@ fun EditSectionCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(horizontal = 9.0.dp, vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             content = content
         )
@@ -1171,6 +1171,7 @@ fun DaySelectionRow(
                 days.forEachIndexed { index, day ->
                     val isSelected = selectedDays.contains(day)
                     SegmentedButton(
+                        modifier = Modifier.weight(1f),
                         shape = SegmentedButtonDefaults.itemShape(index = index, count = days.size),
                         checked = isSelected,
                         onCheckedChange = {
@@ -1192,7 +1193,11 @@ fun DaySelectionRow(
                         },
                         icon = {},
                     ) {
-                        Text(getDayLabel(day), fontSize = 12.sp)
+                        Text(
+                            text = getDayLabel(day),
+                            style = MaterialTheme.typography.labelMedium,
+                            maxLines = 1,
+                        )
                     }
                 }
             }
