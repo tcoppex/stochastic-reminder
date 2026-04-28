@@ -5,6 +5,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import cc.polysfaer.stochapop.data.reminder.Reminder
 import cc.polysfaer.stochapop.data.reminder.ReminderSettings
@@ -225,6 +226,14 @@ class SchedulerRepository(
     }
 
     private fun shouldUseExactAlarm(reminder: Reminder): Boolean {
-        return reminder.hasSound || reminder.hasVibration
+        val useExact = reminder.hasSound || reminder.hasVibration
+
+        // On Android12+ the EXACT_ALARM permission could be revoked. If it's the case we'll use
+        // an non exact alarm instead. TODO: alert the user they should give back the permission.
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            useExact && alarmManager.canScheduleExactAlarms()
+        } else {
+            useExact
+        }
     }
 }
