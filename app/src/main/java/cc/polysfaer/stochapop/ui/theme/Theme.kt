@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import cc.polysfaer.stochapop.ui.AppTypography
 
+const val ENABLE_DARK_MODE = false
+
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
     onPrimary = onPrimaryLight,
@@ -89,7 +91,7 @@ private val darkScheme = darkColorScheme(
 
 @Composable
 fun StochaPopTheme(
-    darkTheme: Boolean = false && isSystemInDarkTheme(),
+    darkTheme: Boolean = ENABLE_DARK_MODE && isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable() () -> Unit

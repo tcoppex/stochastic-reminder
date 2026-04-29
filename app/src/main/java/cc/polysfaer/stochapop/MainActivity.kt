@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import cc.polysfaer.stochapop.ui.StochaPopApp
+import cc.polysfaer.stochapop.ui.theme.ENABLE_DARK_MODE
 import cc.polysfaer.stochapop.ui.theme.StochaPopTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,9 +21,13 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         enableEdgeToEdge()
 
-        // As we currently force LightMode, we need enable enforced contrast on it.
-        val isNightMode = resources.configuration.uiMode.and(Configuration.UI_MODE_NIGHT_YES) != 0
-        window.isNavigationBarContrastEnforced = isNightMode
+        if (!ENABLE_DARK_MODE) {
+            // As we currently force LightMode, we need to enforce contrast when dark mode is selected.
+            val isNightMode = resources.configuration.uiMode.and(Configuration.UI_MODE_NIGHT_YES) != 0
+            window.isNavigationBarContrastEnforced = isNightMode
+        } else {
+            window.isNavigationBarContrastEnforced = false
+        }
 
         setContent {
             StochaPopTheme {
