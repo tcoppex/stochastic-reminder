@@ -3,7 +3,6 @@ package cc.polysfaer.stochapop.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val ForestGreenPrimary = Color(0xFF538049)
-val SageGreenSecondary = Color(0xFF74805F)
 val TerraCottaTertiary = Color(0xFFAA5F6C)
 
 val ErrorRed = Color(0xFFB43D3D)
@@ -22,7 +21,8 @@ val primaryLight = ForestGreenPrimary
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFF9FAF8A)
 val onPrimaryContainerLight = Color(0xFF254435)
-val secondaryLight = SageGreenSecondary
+
+val secondaryLight = Color(0xFFA8A170)
 val onSecondaryLight = Color(0xFFFFFFFF)
 val secondaryContainerLight = Color(0xFFD7E8CC)
 val onSecondaryContainerLight = Color(0xFF121F0E)
