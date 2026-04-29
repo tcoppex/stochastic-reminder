@@ -1,1 +1,1 @@
-Pianificatore di promemoria personalizzati casuali e fissi
+Pianificatore di promemoria casuali e fissi.

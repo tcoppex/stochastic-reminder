@@ -1,1 +1,1 @@
-Planificateur de rappels hebdomadaires personnalisables
+Planificateur de rappels fixes et aléatoires.

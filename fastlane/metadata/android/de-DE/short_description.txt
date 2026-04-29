@@ -1,1 +1,1 @@
-Benutzerdefinierter Planer für zufällige und feste Erinnerungen
+Fester und zufälliger Erinnerungsplaner.
