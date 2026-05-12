@@ -75,9 +75,9 @@ fun StochaPopAppBar(
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
-        expandedHeight = 45.dp,
+        expandedHeight = 55.dp,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            containerColor = MaterialTheme.colorScheme.primaryContainer, //.copy(alpha=0.5f),
             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ),
         title = { Text(text = stringResource(titleRes)) },
