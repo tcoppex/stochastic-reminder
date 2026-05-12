@@ -724,7 +724,7 @@ fun ReminderTextField(
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Sentences,
-            imeAction = ImeAction.Done
+            imeAction = ImeAction.Default
         ),
         keyboardActions = KeyboardActions(
             onDone = { focusManager.clearFocus() }
