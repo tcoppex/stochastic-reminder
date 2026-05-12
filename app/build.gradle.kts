@@ -64,16 +64,17 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.animation.core)
+    implementation(libs.androidx.compose.foundation)
+
+    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.material3)
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.material3)
     ksp(libs.androidx.room.compiler)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
