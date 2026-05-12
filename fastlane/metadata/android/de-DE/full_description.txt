@@ -1,4 +1,4 @@
-Erstellen und Verwalten von Erinnerungen mit benutzerdefinierten Benachrichtigungen.
+Planen und personalisieren Sie feste und zufällige wöchentliche Benachrichtigungen.
 
 <b>Features</b>
 

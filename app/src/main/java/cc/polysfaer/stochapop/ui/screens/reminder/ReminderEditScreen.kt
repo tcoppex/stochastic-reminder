@@ -2,7 +2,6 @@
 
 package cc.polysfaer.stochapop.ui.screens.reminder
 
-
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -265,11 +264,12 @@ fun EditScreenContent(
     Column(
         modifier = modifier
             .padding(horizontal = 10.5.dp)
-            .padding(top = 14.dp)
             .verticalScroll(rememberScrollState())
             .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        Spacer(modifier = Modifier.height(1.dp))
+
         TitledEditSectionCard(
             title = stringResource(R.string.edit_section_card_content),
         ) {
@@ -724,7 +724,7 @@ fun ReminderTextField(
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Text,
             capitalization = KeyboardCapitalization.Sentences,
-            imeAction = ImeAction.Done
+            imeAction = ImeAction.Default
         ),
         keyboardActions = KeyboardActions(
             onDone = { focusManager.clearFocus() }

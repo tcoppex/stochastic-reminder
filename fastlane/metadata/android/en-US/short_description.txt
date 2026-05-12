@@ -1,1 +1,1 @@
-Custom fixed and random reminder scheduler
+Fixed and random reminder scheduler.
